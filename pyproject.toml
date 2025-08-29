@@ -1,0 +1,14 @@
+[project]
+name = "daft-structured-outputs"
+version = "0.1.0"
+description = "A Week of Structured Outputs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "daft[ray,huggingface]",
+    "pydantic",
+    "openai",
+    "vllm",
+]
+
+
