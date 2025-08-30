@@ -1,6 +1,10 @@
-## daft-structured-outputs
+# daft-structured-outputs
 
 A focused sandbox for exploring structured outputs with Daft, vLLM, and OpenAI-compatible clients.
+
+## [Core Notebook](/workload/Daft Canonical Workload Gemma 3 vLLM.ipynb) (Start Here)
+
+---
 
 ### Table of Contents
 - **Getting Started**
