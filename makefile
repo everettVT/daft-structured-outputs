@@ -40,13 +40,14 @@ activate:
 	@echo "Run to activate in your shell: source $(VENV_DIR)/bin/activate"
 	@echo "Recommended: use 'uv run <command>' without activating."
 
-# Authenticate to Hugging Face if HF_TOKEN is not set
+# Authenticate to Hugging Face. If HF_TOKEN is set, login non-interactively; otherwise, prompt.
 hf-auth: uv-check
-	@if [ -z "$(HF_TOKEN)" ]; then \
-		echo "HF_TOKEN is not set; launching 'hf auth login'"; \
-		uv run hf auth login; \
+	@if [ -n "$(HF_TOKEN)" ]; then \
+		echo "HF_TOKEN is set; performing non-interactive login via huggingface_hub"; \
+		uv run python -c "from huggingface_hub import login; import os; login(token=os.environ.get('HF_TOKEN'), add_to_git_credential=True)"; \
 	else \
-		echo "HF_TOKEN is set; skipping Hugging Face login."; \
+		echo "HF_TOKEN not set; launching interactive 'hf auth login'"; \
+		uv run hf auth login; \
 	fi
 
 # Run vLLM OpenAI-compatible API server

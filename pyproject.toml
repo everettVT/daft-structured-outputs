@@ -5,7 +5,7 @@ description = "A Week of Structured Outputs"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "daft[ray,huggingface]",
+    "daft[huggingface,ray]",
     "pydantic",
     "openai",
     "vllm",
