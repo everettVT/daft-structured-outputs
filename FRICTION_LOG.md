@@ -22,9 +22,14 @@ I approached documenting friction points from the expectation that Daft makes it
 # Friction Points
 The [unfiltered notebook](daft-structured-outputs/friction/full_notebook_unfiltered.ipynb) captures my experience end-to-end building the workload iteself. There is probably a hidden 10 hours of combined pain dedicated to just vllm alone. Ray 
 
+- Class-based UDF initialization syntax -> Could use better error messages [Issue 5089](https://github.com/Eventual-Inc/Daft/issues/5089)
+- No Base64 encoding for image dtype [Issue 5089](https://github.com/Eventual-Inc/Daft/issues/5089)
+- Concurrency Param bug for python function based udfs with OpenAI client [Issue 5088](https://github.com/Eventual-Inc/Daft/issues/5088)
+- Event loop Exceptions when scaling inference without a set event loop. MAKE AN ISSUE FOR ERROR HANDLING OF ASYNC EXRPTIONS 
+- Hanging Infernce calls when running 2000+ rows
+
 Daft scales easily, too easily as it turns out. The `asyncio.event_loop` can become starved  limitations on the openai client can create unexpected errors. This combined The simplest implementations of row-wise and batch user-defined functions both failed to process more than 2000 rows with default concurrency, and with   
 
-  I ran into few bugs and friction points that I've since created issues for (listed above).
  
 ## Raw Take
 
@@ -40,9 +45,5 @@ While I initally really wanted to work with gemma-3n-270m, a tiny model operatin
 Not having Copy/Paste tutorials for implementing structured outputs made it confusing to decouple issues between daft and vllm at times, but in the end I think we arrived at something that looks reasonable. 
 
 Friction points: 
-- Class-based UDF initialization syntax -> Could use better error messages [Issue 5089](https://github.com/Eventual-Inc/Daft/issues/5089)
-- No Base64 encoding for image dtype [Issue 5089](https://github.com/Eventual-Inc/Daft/issues/5089)
-- Concurrency Param bug for python function based udfs with OpenAI client [Issue 5088](https://github.com/Eventual-Inc/Daft/issues/5088)
-- Event loop Exceptions when scaling inference without a set event loop. 
-- Hanging Infernce calls when running 2000+ rows
+
 
