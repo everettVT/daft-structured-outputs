@@ -2,7 +2,7 @@
 
 A focused sandbox for exploring structured outputs with Daft, vLLM, and OpenAI-compatible clients.
 
-[Core Notebook](/workload/Daft Canonical Workload Gemma 3 vLLM.ipynb) (Start Here)
+[Core Notebook](./workload/Daft Canonical Workload Gemma 3 vLLM.ipynb) (Start Here)
 
 ---
 
