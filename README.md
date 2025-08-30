@@ -73,9 +73,9 @@ make vllm-serve \
   HOST=0.0.0.0 PORT=8000
 ```
 
-If you need Hugging Face auth:
+You will need authenticate with Hugging Face to access Gemma-3
 ```bash
-make hf-auth
+hf auth login
 ```
 
 ### Run the workload scripts/notebooks
