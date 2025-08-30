@@ -63,6 +63,7 @@ make vllm-serve   # Start vLLM OpenAI-compatible server
 
 ### Start the vLLM OpenAI server
 Defaults are aligned with project notebooks:
+
 ```bash
 make vllm-serve \
   MODEL=google/gemma-3n-e4b-it \
@@ -71,6 +72,7 @@ make vllm-serve \
   GPU_MEM_UTIL=0.85 \
   HOST=0.0.0.0 PORT=8000
 ```
+
 If you need Hugging Face auth:
 ```bash
 make hf-auth
@@ -82,32 +84,6 @@ make hf-auth
 uv run python workload/daft_mm_so_gemma3.py
 ```
 - Notebooks: open in your IDE or Jupyter and ensure the environment variables above are set in the session.
-
----
-
-### Canon
-Curated examples and references. Open directly or execute through your IDE.
-- `canon/vllm/vllm_structured_outputs.py`
-- `canon/vllm/OpenAI Chat Completion Client.py`
-- `canon/vllm/OpenAI Chat Completion Client with Tools.py`
-- `canon/vllm/OpenAI Chat Completion Tool Calls.py`
-- `canon/llm_generate_so_vllm_online.ipynb`
-- `canon/ray/VLLM with Structural Output.ipynb`
-- `canon/sglang/sglang_structured_outputs.ipynb`
-- `canon/sglang/sglang_function_calling.ipynb`
-- `canon/sglang/sglang_structured_outputs_for_reasoning_models.ipynb`
-
-### Friction
-Notes and experiments documenting rough edges, performance, and gotchas.
-- `friction/FULL_MESS.ipynb`
-- `friction/udf_performance.ipynb`
-- `friction/udf_pains.ipynb`
-- `friction/trying_to_hack_llm_generate_for_images.ipynb`
-
-### Workload
-End-to-end flows and runnable scripts.
-- `workload/daft_mm_so_gemma3.py`
-- `workload/daft_mm_so_vllm_walkthough.ipynb`
 
 ---
 
