@@ -1,3 +1,15 @@
+"""
+
+For running gemma-3n-e4b-it with vllm, you need to run the following command (A100 recommended):
+ python -m vllm.entrypoints.openai.api_server \
+  --model google/gemma-3n-e4b-it \
+  --guided-decoding-backend guidance \
+  --dtype bfloat16 \
+  --gpu-memory-utilization 0.85 \
+  --host 0.0.0.0 --port 8000
+
+
+"""
 # Import Dependencies
 import asyncio
 import base64
@@ -7,7 +19,8 @@ from daft.functions import format, llm_generate
 from openai import OpenAI, AsyncOpenAI
 import time
 
-@daft.udf(return_dtype=daft.DataType.string(), concurrency=concurrency, batch_size= batch_size)
+# Define the UDF ---------------------------------------------------------------
+@daft.udf(return_dtype=daft.DataType.string())
 class StructuredOutputsProdUDF:
     def __init__(self, base_url: str, api_key: str, max_conn: int = 32):
         self.client = AsyncOpenAI(base_url=base_url, api_key=api_key)
@@ -65,16 +78,16 @@ class DaftStructuredOutputsBench:
         self.client = AsyncOpenAI(base_url=base_url, api_key=api_key)
 
 if __name__ == "__main__":
+    # Load Environment Variables ---------------------------------------------------
     import os 
     from dotenv import load_dotenv
 
     load_dotenv()
 
-    # Step 0 Define Variables and Inference UDF ------------------------------------
+    # Define Variables ------------------------------------------------------------
     model_id = 'google/gemma-3n-e4b-it'
     base_url = os.getenv("OPENAI_BASE_URL")
     api_key = os.getenv("OPENAI_API_KEY")
-    batch_size = 32
     concurrency = 4
     max_conn = 32 
 
@@ -130,10 +143,8 @@ if __name__ == "__main__":
     df_eval = df_prod_udf.with_column("is_correct", col("result").str.lstrip().str.rstrip() == col("answer").str.lstrip().str.rstrip())
 
 
-
-
-# Calculate
-pass_fail_rate = df_eval.where(col("is_correct")).count_rows() / df_eval.count_rows()
-print(f"Pass/Fail Rate: {pass_fail_rate}")
+    # Calculate Pass/Fail Rate 
+    pass_fail_rate = df_eval.where(col("is_correct")).count_rows() / df_eval.count_rows()
+    print(f"Pass/Fail Rate: {pass_fail_rate}")
 
 
