@@ -40,26 +40,6 @@ activate:
 	@echo "Run to activate in your shell: source $(VENV_DIR)/bin/activate"
 	@echo "Recommended: use 'uv run <command>' without activating."
 
-# Authenticate to Hugging Face. If HF_TOKEN is set, login non-interactively; otherwise, prompt.
-hf-auth: uv-check
-	@if [ -n "$(HF_TOKEN)" ]; then \
-		echo "HF_TOKEN is set; performing non-interactive login via huggingface_hub"; \
-		uv run python -c "from huggingface_hub import login; import os; login(token=os.environ.get('HF_TOKEN'), add_to_git_credential=True)"; \
-	else \
-		echo "HF_TOKEN not set; launching interactive 'hf auth login'"; \
-		uv run hf auth login; \
-	fi
-
-# Run vLLM OpenAI-compatible API server
-vllm-serve: uv-check
-	@echo "Starting vLLM OpenAI server on $(HOST):$(PORT) with model $(MODEL)"
-	@uv run python -m vllm.entrypoints.openai.api_server \
-		--model $(MODEL) \
-		--guided-decoding-backend $(GUIDED_BACKEND) \
-		--dtype $(DTYPE) \
-		--gpu-memory-utilization $(GPU_MEM_UTIL) \
-		--host $(HOST) --port $(PORT)
-
 clean:
 	@echo "Removing $(VENV_DIR)"
 	@rm -rf $(VENV_DIR)

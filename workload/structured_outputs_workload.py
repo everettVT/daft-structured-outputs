@@ -211,7 +211,7 @@ if __name__ == "__main__":
     load_dotenv()
 
     # Define Variables
-    model_id = 'google/gemma-3n-e4b-it'
+    model_id = os.getenv("MODEL_ID") or 'google/gemma-3n-e4b-it'
     base_url = os.getenv("OPENAI_BASE_URL")
     api_key = os.getenv("OPENAI_API_KEY")
     dataset_uri = 'hf://datasets/HuggingFaceM4/the_cauldron/ai2d/train-00000-of-00001-2ce340398c113b79.parquet' # 7462 rows
@@ -224,13 +224,14 @@ if __name__ == "__main__":
         base_url = base_url
     )
 
+    # Run the pipeline 
     df = pipeline(
         model_id = model_id, 
         dataset_uri = dataset_uri, 
         sampling_params={"temperature": 0.0}, 
         row_limit = row_limit,
         concurrency = concurrency,
-        is_eager=False,
+        is_eager=False, # Helpful for debugging
     )
 
     # Materialize the dataframe

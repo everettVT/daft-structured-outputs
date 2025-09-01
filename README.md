@@ -1,8 +1,15 @@
-# daft-structured-outputs
+<div align="center">
 
-A focused sandbox for exploring structured outputs with Daft, vLLM, and OpenAI-compatible clients.
+# Daft Structured Outputs 
 
-[Core Notebook](./workload/Daft Canonical Workload Gemma 3 vLLM.ipynb) (Start Here)
+Canonical multimodal workloads Sandbox for Structured Ouputs with Daft
+
+<i> Featuring HuggingFace, vLLM, Gemma 3n, and OpenAI </i>
+
+</div>
+
+
+[Core Notebook](./workload/Daft_Canonical_Workload_Gemma 3_vLLM.ipynb) (Start Here)
 
 ---
 
@@ -59,8 +66,6 @@ make setup        # Create venv and uv sync
 make sync         # Re-sync dependencies
 make activate     # Echo activation instructions (prefer `uv run`)
 make clean        # Remove .venv
-make hf-auth      # Run 'hf auth login' if HF_TOKEN is not set
-make vllm-serve   # Start vLLM OpenAI-compatible server
 ```
 
 ---
@@ -69,12 +74,13 @@ make vllm-serve   # Start vLLM OpenAI-compatible server
 Defaults are aligned with project notebooks:
 
 ```bash
-make vllm-serve \
-  MODEL=google/gemma-3n-e4b-it \
-  GUIDED_BACKEND=guidance \
-  DTYPE=bfloat16 \
-  GPU_MEM_UTIL=0.85 \
-  HOST=0.0.0.0 PORT=8000
+uv run vllm.entrypoints.openai.api_server \
+  --model google/gemma-3n-e4b-it \
+  --enable-chunked-prefill \
+  --guided-decoding-backend guidance \
+  --dtype bfloat16 \
+  --gpu-memory-utilization 0.85 \
+  --host 0.0.0.0 --port 8000
 ```
 
 You will need authenticate with Hugging Face to access Gemma-3
@@ -99,8 +105,9 @@ uv run pytest -q tests/test_openai_vllm_integration.py
 Environment variables used by the tests:
 - `OPENAI_BASE_URL` (default `http://0.0.0.0:8000/v1`)
 - `OPENAI_API_KEY` (default `none`)
-- `MODEL` (default `google/gemma-3n-e4b-it`)
+- `MODEL_ID` (default `google/gemma-3n-e4b-it`)
 - `TEST_IMAGE_URL` (optional; enables the vision test)
+- 
 
 ---
 

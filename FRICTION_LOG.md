@@ -2,10 +2,10 @@
 
 - Date: Aug 25, 2025
 - Author: Everett Kleven
-- Size: XL
+- Size: L
 - Persona: UDF Naive User
-- Notebooks: 
-    * [Daft Canonical Workload - Multimodal Structured Outputs with Gemma 3 and vLLM](https://colab.research.google.com/drive/1-AJWGeTPhtIK_uXngPmxMFRePlU5rKRU#scrollTo=BOa4WVnVKJoD)
+- [Notebook](https://colab.research.google.com/drive/1-AJWGeTPhtIK_uXngPmxMFRePlU5rKRU#scrollTo=BOa4WVnVKJoD)
+- [Python Script](/workload/structured_outputs_workload.py)
   
 ## Summary
 Structured Ouputs work with Daft, but usage patterns aren't immediately obvious without examples. Multimodality currently isn't supported in `llm_generate` and a `daft.DataType.Image()` utility for base64 encoding would be helpful. Due to this, I had to build my own class-based batch UDF which took a while and turned out to be non-trivial. Initial attempts to use a row-wise udfs yielded poor performance, however transitioning the udf to Async Batch yielded unexpected errors and scaling issues. This combined with the complexity of implementing inference as a part of an actual non-trivial workload led to high cognitive load. Overall, due to the complex interplay of marrying multiple interfaces and usage patterns, there is significant opportunity to streamline vectorized structured outputs for multimodal worklaods. 
@@ -102,13 +102,13 @@ Movning from a synchronous mental model to a batch udf was fine for me, but it d
 
 For this workload I was only using one model_id and one extra_body arg, so I didn't need those parameters to be vectorized or unpacked from daft.series. Again, sounds trivial, but when you are in the moment and you are used to thinking about re-usability, it takes up at least one thread of cognitive load. 
 
-I think that everytime I write `df.topylist()` I unconciously *wince* a little bit and my eye begins to twitch. We all know that using daft expressions as much as possible yields the best performance, but in this case it's especially true. This UDF is probably one of the most useful and unperfomant ways of scaling inference there is and the serialization back to python incurrs inter-generational guilt that I'm just not sure I can atone for. 
+Everytime I write `df.to_pylist()` I *wince* and my eye begins to twitch. We all know that using daft expressions as much as possible yields the best performance, but in this case it's especially true. This UDF is useful but is certainly unperfomant. The serialization back to python alone incurrs inter-generational guilt that I'm just not sure I can atone for.
 
-ANYWAYS, once I had the list comprehension pattern down for zipping the texts and images together... Wait (I thought) ... what about passing lists of images? What about passing entire message histories? How is that supposed to come together anyways? The OpenAI client doesn't just support a single image or a single text content, it can handle a list of them! (This api design problem lives rent free in my head with the water running). I knew was facing emminent destruction of my focus if I played with the idea for too long, so I went with the explicit route. 
+ANYWAYS, once I had the list comprehension pattern down for zipping the texts and images together... Wait (I thought) ... what about passing lists of images? What about passing entire message histories? How is that supposed to come together anyways? The OpenAI client doesn't just support a single image or a single text content, it can handle a list of them! (This api design problem lives rent free in my head with the water running). I knew was facing emminent destruction of my focus if I played with the idea for too long, so I went with the explicit route.
 
-Moving on... I already knew the general shape of the pattern I needed to implement from colin's async pattern implemented in Sashimi4Talent and llm_generate, so I proceeded to reproduce the same idea with an extra input. Really the only difference between what I ended up writing for this initial function based UDF and the final "production" class-based udf was how I instantiaed the client and event_loop attachment logic that ended up silencing all of the errors we were seeing earlier. 
+Moving on... I already knew the general shape of the pattern I needed to implement from colin's async pattern implemented in Sashimi4Talent and llm_generate, so I proceeded to reproduce the same idea with an extra input. Really the only difference between what I ended up writing for this initial function based UDF and the final "production" class-based udf was how I instantiaed the client and event_loop attachment logic that ended up silencing all of the errors we were seeing earlier.
 
-The batch implementation did turn out to be faster, but like I just said, no matter what I did I kept running into those pesky event_loop errors. I knew it had to do with concurreny of the client, so I tried adding a concurrency specifier in the udf decorator for the definition. This was super frustrating since it yielded a different runtime error relating to some sort of pickling issue. I've already included the minimum reproducible example in issue 5088 which was surprising to develop. I wonder if the OpenAI client itself is just this giant complicated thing that shouldn't be included in a UDF at all and we should just be using http requests explicitly. It would probably be simpler. 
+The batch implementation did turn out to be faster, but like I just said, no matter what I did I kept running into those pesky event_loop errors. I knew it had to do with concurreny of the client, so I tried adding a concurrency specifier in the udf decorator for the definition. This was super frustrating since it yielded a different runtime error relating to some sort of pickling issue. I've already included the minimum reproducible example in issue 5088 which was surprising to develop. I wonder if the OpenAI client itself is just this giant complicated thing that shouldn't be included in a UDF at all and we should just be using http requests explicitly. It would probably be simpler.
 
 Regardless, the UDF had to evolve to a class based approach in order for me to run the entire workload in a reasonable amount of time without error. This "production" UDF implementation uses the same event_loop attachment/factory logic that exists in the `llm_generate` function and ended up working for me as well.
 
@@ -120,12 +120,16 @@ The only real differences between my final UDF and llm_generate is:
 
 `llm_generate` works with structured outputs on text inputs with no changes needed. It ran the entire dataset (all ~8000 rows), without issues. I actually end up using llm_generate to check image understanding with/without the actual images.  
 
-Hilariously, I was getting the exact same performance between text only and text + image (pass/fail rate of ~55%) until about 30 minutes ago when I looked at the usage pattern and realized that the dataset has the image passed first before the questions. Now that I've run the full workload with images first, the pass/fail rate sits at ~70%. Turns out that we see only a 20% difference in meaningful image understanding with/without images.
+Hilariously, I was getting the exact same performance between text only and text + image (pass/fail rate of ~55%) until about 30 minutes ago when I looked at the usage pattern and realized that the dataset has the image passed first before the questions. Now that I've run the full workload with images first, the pass/fail rate sits at ~70%. Turns out that we see only a 15% difference in meaningful image understanding with/without images.
 
-The dataset I used to build the workload is actually just one of over a dozen datasets we could use to evaluate model performance or use for training. The next logical step for our workload would be to parallelize the evaluation on ray. 
+The dataset I used to build the workload is actually just one of 50 datasets we could use to evaluate model performance or for training. The next logical step for our workload would be to parallelize the evaluation on ray across multiple subsets.
 
-Arguably, this type of a workload sets the foundation for all sorts of opportunities for case studies in architecture design and could rival Ray's Structured Outputs example head for head. 
+Arguably, this type of a workload sets the foundation for all sorts of opportunities for case studies in architecture design and could set the stage for Daft to rival Ray's Batch Structured Outputs example.
 
 ## Conclusion
 
-My goal in developing this workload was to not only uncover friction points in scaling daft multimodal inference, but to also provide the foundation for future case-studies for the daft team to develop advanced solutions. In addition to being able to run this workload on different models, the workload itself is valuable for making strategic decisions. 
+My goal in developing this workload was to not only uncover friction points in scaling daft multimodal inference, but to also provide a genuinely useful piece of code. AI engineers are constantly evaluating new models, and rarely do you see examples that are this end to end.
+
+I'd like to extend the workload to compare performance across model variants, or explore how different sampling parameters impact performance. There seems to be a new frontier open source model released every week nowadays, and I only expect that trend to continue.
+
+I think there are a lot of pain points that I have uncovered that are easily adderessed with a new llm_generate api signature. Throughout this exercise I aimed to focus on the problems instead of trying to provide an all-encompassing solution. I hope you found this Friction log helpful and maybe learned a thing or two a long the way.

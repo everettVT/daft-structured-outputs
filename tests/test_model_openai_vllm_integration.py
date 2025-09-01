@@ -27,8 +27,7 @@ def _get_model_id() -> str:
     Checks MODEL, then OPENAI_MODEL_ID, then defaults to gemma 3n IT.
     """
     return (
-        os.environ.get("MODEL")
-        or os.environ.get("OPENAI_MODEL_ID")
+        os.environ.get("MODEL_ID")
         or "google/gemma-3n-e4b-it"
     )
 
@@ -48,7 +47,7 @@ def _get_timeout_client(client: OpenAI, timeout_s: float = 30.0) -> OpenAI:
 
 
 def _get_test_image_url() -> Optional[str]:
-    return os.environ.get("TEST_IMAGE_URL")
+    return "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/bee.jpg"
 
 
 def test_models_list_returns_models():
