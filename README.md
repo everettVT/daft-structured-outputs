@@ -10,29 +10,15 @@ Canonical multimodal workloads Sandbox for Structured Ouputs with Daft
 
 ---
 
-Core Deliverable: 
-- [Notebook](//workload/Daft_Canonical_Workload_Gemma3_vLLM.ipynb)
+**Core Deliverable**
+- [Notebook](/workload/Daft_Canonical_Workload_Gemma3_vLLM.ipynb)
 - [Python Script](/workload/structured_outputs_workload.py)
 
----
-
-### Table of Contents
-- **Getting Started**
-  - [Prerequisites](#prerequisites)
-  - [Install and Setup](#install-and-setup)
-  - [Environment Variables](#environment-variables)
-  - [Make Targets](#make-targets)
-- **Serving & Running**
-  - [Start the vLLM OpenAI server](#start-the-vllm-openai-server)
-  - [Run the workload scripts/notebooks](#run-the-workload-scriptsnotebooks)
-- **Project Content**
+**Project Content**
   - [References](/references) contains reference examples from ray, vllm, and sglang on structured outputs, as well as a full suite of `llm_generate` inference calls across the most common structured output methods.
   - [Friction](/friction) contains the original (giant) "Scaling Multimodal Structured Outputs with Gemma-3, vLLM, and Daft", as well as notebooks focused on individal pain points seperated for easier review.
   - [Workload](/workload) contains both a full walkthrough notebook and atomic python script for evaluating multimodal model performance on image understanding.
-- **Testing**
   - [Integration tests](/tests) for openai and llm_generate structured outputs usage patterns
-- **Troubleshooting**
-  - [Common issues](#common-issues)
 
 ---
 
