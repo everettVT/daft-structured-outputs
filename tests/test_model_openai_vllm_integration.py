@@ -4,6 +4,9 @@ from typing import Optional
 
 import pytest
 
+# Mark entire module as integration to allow CI to filter
+pytestmark = pytest.mark.integration
+
 try:
     from openai import OpenAI
 except Exception as exc:  # pragma: no cover

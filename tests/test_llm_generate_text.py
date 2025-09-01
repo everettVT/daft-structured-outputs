@@ -2,6 +2,9 @@ import os
 import re
 
 import pytest
+
+# Mark as integration; this test requires a live OpenAI-compatible endpoint
+pytestmark = pytest.mark.integration
 from dotenv import load_dotenv
 
 import daft
