@@ -9,8 +9,6 @@ Canonical multimodal workloads Sandbox for Structured Ouputs with Daft
 </div>
 
 
-[Core Notebook](./workload/Daft_Canonical_Workload_Gemma 3_vLLM.ipynb) (Start Here)
-
 ---
 
 ### Table of Contents
