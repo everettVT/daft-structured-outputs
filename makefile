@@ -2,11 +2,11 @@ PYPROJECT := pyproject.toml
 UV := $(shell command -v uv)
 VENV_DIR := .venv
 
-# Environment variables (override via environment or `make VAR=value`)
-OPENAI_API_KEY ?= none
-OPENAI_BASE_URL ?= http://0.0.0.0:8000/v1
-HF_TOKEN ?=
-export OPENAI_API_KEY OPENAI_BASE_URL HF_TOKEN
+# Load environment vars from .env if present
+ifneq (,$(wildcard .env))
+include .env
+export $(shell sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*\)=.*/\1/p' .env)
+endif
 
 # vLLM defaults (override as needed)
 MODEL ?= google/gemma-3n-e4b-it

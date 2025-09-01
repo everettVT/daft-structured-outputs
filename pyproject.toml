@@ -9,6 +9,7 @@ dependencies = [
     "pydantic",
     "openai",
     "vllm",
+    "python-dotenv",
 ]
 
 
