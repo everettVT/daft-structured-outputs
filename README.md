@@ -104,6 +104,6 @@ Environment variables used by the tests:
 
 ### Common issues
 - **vLLM server not reachable**: Ensure `make vllm-serve` is running; confirm `OPENAI_BASE_URL` and `PORT`.
-- **HF auth required**: Run `make hf-auth` to authenticate if `HF_TOKEN` is not set.
+- **HF auth required**: Run `hf auth login` to authenticate if `HF_TOKEN` is not set.
 - **GPU memory**: Adjust `GPU_MEM_UTIL` in `make vllm-serve` for your hardware.
-- **Dependencies**: Re-run `make sync` after modifying `pyproject.toml`.
+- **Dependencies**: Re-run `uv sync` after modifying `pyproject.toml`.
