@@ -7,7 +7,11 @@ Canonical multimodal workloads Sandbox for Structured Ouputs with Daft
 <i> Featuring HuggingFace, vLLM, Gemma 3n, and OpenAI </i>
 
 </div>
+---
 
+Core Deliverable: 
+- [Notebook](//workload/Daft_Canonical_Workload_Gemma3_vLLM.ipynb)
+- [Python Script](/workload/structured_outputs_workload.py)
 
 ---
 
