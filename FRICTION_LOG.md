@@ -4,7 +4,7 @@
 - Author: Everett Kleven
 - Size: L
 - Persona: UDF Naive User
-- [Notebook](https://colab.research.google.com/drive/1-AJWGeTPhtIK_uXngPmxMFRePlU5rKRU#scrollTo=BOa4WVnVKJoD)
+- [Notebook](/workload/Daft_Canonical_Workload_Gemma3_vLLM.ipynb)
 - [Python Script](/workload/structured_outputs_workload.py)
   
 ## Summary

@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     # Define Variables
     model_id = os.getenv("MODEL_ID") or 'google/gemma-3n-e4b-it'
-    base_url = os.getenv("OPENAI_BASE_URL")
+    base_url = os.getenv("OPENAI_BASE_URL") or "http://localhost:8000"
     api_key = os.getenv("OPENAI_API_KEY")
     dataset_uri = 'hf://datasets/HuggingFaceM4/the_cauldron/ai2d/train-00000-of-00001-2ce340398c113b79.parquet' # 7462 rows
     concurrency = 4
