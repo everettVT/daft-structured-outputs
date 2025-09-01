@@ -5,6 +5,21 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Run integration tests"
+        required: false
+        default: false
+        type: boolean
+      target_env:
+        description: "Target environment for integration tests"
+        required: false
+        default: "env1"
+        type: choice
+        options:
+          - env1
+          - env2
 
 permissions:
   contents: read
@@ -37,6 +52,12 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     needs: unit
+    strategy:
+      matrix:
+        target_env: [env1]
+      fail-fast: false
+    env:
+      TARGET_ENV: ${{ github.event.inputs.target_env || matrix.target_env }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,15 +73,33 @@ jobs:
       - name: Sync dependencies
         run: uv sync
 
-      - name: Run integration tests
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
-          MODEL_ID: ${{ secrets.MODEL_ID }}
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Select environment secrets
+        id: envsecrets
         run: |
-          if [ -z "${{ secrets.OPENAI_BASE_URL }}" ]; then
-            echo "OPENAI_BASE_URL not set; skipping integration tests";
+          echo "TARGET_ENV=$TARGET_ENV" >> $GITHUB_OUTPUT
+      - name: Run integration tests (env1)
+        if: ${{ steps.envsecrets.outputs.TARGET_ENV == 'env1' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.ENV1_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.ENV1_OPENAI_BASE_URL || secrets.OPENAI_BASE_URL }}
+          MODEL_ID: ${{ secrets.ENV1_MODEL_ID || secrets.MODEL_ID }}
+          HF_TOKEN: ${{ secrets.ENV1_HF_TOKEN || secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$OPENAI_BASE_URL" ]; then
+            echo "OPENAI_BASE_URL not set; skipping integration tests for env1";
+            exit 0;
+          fi
+          uv run pytest -q -m integration
+      - name: Run integration tests (env2)
+        if: ${{ steps.envsecrets.outputs.TARGET_ENV == 'env2' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.ENV2_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.ENV2_OPENAI_BASE_URL || secrets.OPENAI_BASE_URL }}
+          MODEL_ID: ${{ secrets.ENV2_MODEL_ID || secrets.MODEL_ID }}
+          HF_TOKEN: ${{ secrets.ENV2_HF_TOKEN || secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$OPENAI_BASE_URL" ]; then
+            echo "OPENAI_BASE_URL not set; skipping integration tests for env2";
             exit 0;
           fi
           uv run pytest -q -m integration

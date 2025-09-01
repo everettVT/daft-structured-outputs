@@ -40,36 +40,24 @@ Core Deliverable:
 - **Python**: 3.12+
 - **uv**: Fast Python package/venv manager. Install:
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+pip install uv
 ```
 
 ### Install and Setup
+Clone this repository and then run 
 ```bash
 cd daft-structured-outputs
-make setup
+uv venv && uv sync
 ```
-This creates a local `.venv` and syncs dependencies from `pyproject.toml`. Prefer running commands with `uv run` without activating the venv.
+- This creates a local `.venv` and syncs dependencies from `pyproject.toml`. 
+- Prefer running commands with `uv run` without activating the venv.
 
 ### Environment Variables
-These are read by tests and examples. The `makefile` also exports them.
+These are read by tests and examples. A `.env.examples` has been provided as a template. 
 - `OPENAI_API_KEY`: Any non-empty value when using a local vLLM server (e.g., `none`).
-- `OPENAI_BASE_URL`: Defaults to `http://0.0.0.0:8000/v1`.
+- `OPENAI_BASE_URL`: Defaults to None. vLLM examples default to localhost:8000 
 - `HF_TOKEN`: Hugging Face token for model pulls. If not set, use `make hf-auth`.
-
-Example:
-```bash
-export OPENAI_API_KEY=none
-export OPENAI_BASE_URL=http://0.0.0.0:8000/v1
-export HF_TOKEN=hf_...
-```
-
-### Make Targets
-```bash
-make setup        # Create venv and uv sync
-make sync         # Re-sync dependencies
-make activate     # Echo activation instructions (prefer `uv run`)
-make clean        # Remove .venv
-```
+- `MODEL_ID`: for integration tests and CI
 
 ---
 

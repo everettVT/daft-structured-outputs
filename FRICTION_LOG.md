@@ -34,7 +34,7 @@ Basically, for class-based user defined functions, naive initialization usage pa
 
 For some reason, when we use an openai client inside of a function based batch UDF, we can't add the concurrency parameter. We get this runtime error referring to pickle serialization. I ran into this while I was initially developing the batch udf and it took a second to actually reproduce, but it looks like others have run into it. I also started a [thread on slack](https://dist-data.slack.com/archives/C052CA6Q9N1/p1756400464828409) due to my confusion on whether or not the daft.func supported a concurrency argument.
 
-### [Issue 5090](https://github.com/Eventual-Inc/Daft/issues/5088) Scaling headaches 
+### Scaling headaches (Demonstrated in workload notebook)
 
 For the average user who is looking to leverage daft to perform ai inference using a client (whether it would be openai or otherwise), most users will try either a row_wise UDF or a synchronous Batch UDF. These implementations work at small scale but run into issues once users attempt to run them at 2000 + rows. Regardless of how they arrive at the conclusion, eventually they will attempt to run their inference calls asynchronously which will produce non-blocking errors at the 200-1500 row limit range. 
 
